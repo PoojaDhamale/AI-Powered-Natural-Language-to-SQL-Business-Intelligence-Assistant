@@ -1,0 +1,22 @@
+# Environment Variables
+.env
+
+# Python
+.pytest_cache/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual Environments
+venv/
+env/
+ENV/
+.venv/
+
+# IDEs
+.vscode/
+.idea/
+
+# Streamlit
+.streamlit/

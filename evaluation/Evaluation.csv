@@ -1,0 +1,154 @@
+﻿Questions,expected_sql,expected_result,ai_generated_sql,ai_result,match
+How many customers are there in total?,SELECT COUNT(customer_key) FROM customer_lookup,18148,SELECT COUNT(customer_key) FROM customer_lookup;,18148,TRUE
+How many customers are homeowners?,SELECT COUNT(customer_key) FROM customer_lookup WHERE home_owner='Y',12260,SELECT COUNT(customer_key) FROM customer_lookup WHERE home_owner = 'Y';,12260,TRUE
+What is the average annual income of customers?,SELECT AVG(annual_income) FROM customer_lookup,57269.12056,SELECT AVG(annual_income) FROM customer_lookup;,57269.12056,TRUE
+What was the total revenue in 2022?,"SELECT SUM(s.order_quantity*p.product_price) AS revenue
+FROM sales_data s
+JOIN product_lookup p
+ON s.product_key=p.product_key
+WHERE EXTRACT(year FROM s.order_date)=2022",9185437.85,"SELECT SUM(s.order_quantity * p.product_price) 
+FROM sales_data s 
+JOIN product_lookup p ON s.product_key = p.product_key 
+WHERE EXTRACT(YEAR FROM s.order_date) = 2022;",9185437.85,TRUE
+How many returns were there in 2021?,"SELECT SUM(return_quantity) FROM returns_data
+WHERE EXTRACT(year FROM return_date)=2021",770,SELECT SUM(return_quantity) FROM returns_data WHERE EXTRACT(YEAR FROM return_date) = 2021;,770,TRUE
+What is the average annual income of customers with a Bachelors education level?,"SELECT AVG(annual_income) FROM customer_lookup
+WHERE education_level='Bachelors'",64396.50257,SELECT AVG(annual_income) FROM customer_lookup WHERE education_level = 'Bachelors';,64396.50257,TRUE
+What are the top 5 products by revenue in 2021?,"SELECT p.product_name,SUM(s.order_quantity*p.product_price) as revenue
+FROM sales_data s
+JOIN product_lookup p
+ON s.product_key=p.product_key
+WHERE EXTRACT(year FROM s.order_date)=2021
+GROUP BY p.product_name
+ORDER BY revenue DESC
+LIMIT 5","""Mountain-200 Black, 46""	616779.10
+""Mountain-200 Silver, 46""	573783.34
+""Mountain-200 Black, 42""	569649.80
+""Mountain-200 Silver, 38""	567569.08
+""Mountain-200 Black, 38""	549158.80","SELECT p.product_name, SUM(sd.order_quantity * p.product_price) AS revenue
+FROM sales_data sd
+JOIN product_lookup p ON sd.product_key = p.product_key
+WHERE EXTRACT(YEAR FROM sd.order_date) = 2021
+GROUP BY p.product_name
+ORDER BY revenue DESC
+LIMIT 5;","Mountain-200 Black, 46""	616779.10
+""Mountain-200 Silver, 46""	573783.34
+""Mountain-200 Black, 42""	569649.80
+""Mountain-200 Silver, 38""	567569.08
+""Mountain-200 Black, 38""	549158.80",TRUE
+Which product category had the highest revenue in 2021?,"SELECT t4.category_name 
+FROM sales_data AS t1 
+JOIN product_lookup AS t2 ON t1.product_key = t2.product_key 
+JOIN product_subcategory_lookup AS t3 ON t2.product_subcategory_key = t3.product_subcategory_key 
+JOIN product_category_lookup AS t4 ON t3.product_category_key = t4.product_category_key 
+WHERE EXTRACT(YEAR FROM t1.order_date) = 2021 
+GROUP BY t4.category_name 
+ORDER BY SUM(t1.order_quantity * t2.product_price) DESC 
+LIMIT 1;",Bikes,"SELECT t4.category_name 
+FROM sales_data AS t1 
+JOIN product_lookup AS t2 ON t1.product_key = t2.product_key 
+JOIN product_subcategory_lookup AS t3 ON t2.product_subcategory_key = t3.product_subcategory_key 
+JOIN product_category_lookup AS t4 ON t3.product_category_key = t4.product_category_key 
+WHERE EXTRACT(YEAR FROM t1.order_date) = 2021 
+GROUP BY t4.category_name 
+ORDER BY SUM(t1.order_quantity * t2.product_price) DESC 
+LIMIT 1;",Bikes,TRUE
+Which territory had the most returns in 2022?,"SELECT t.region,SUM(r.return_quantity) AS total_returns
+FROM territory_lookup t
+JOIN returns_data r
+ON t.territory_key=r.territory_key
+WHERE EXTRACT(YEAR FROM r.return_date)=2022
+GROUP BY t.region
+ORDER BY total_returns DESC
+LIMIT 1","""Australia"":208","SELECT t.region, SUM(rd.return_quantity) AS total_returns 
+FROM returns_data rd 
+JOIN territory_lookup t ON rd.territory_key = t.territory_key 
+WHERE EXTRACT(YEAR FROM rd.return_date) = 2022 
+GROUP BY t.region 
+ORDER BY total_returns DESC 
+LIMIT 1;","""Australia"":208",TRUE
+Which product subcategory had the highest revenue in 2020?,"SELECT psl.subcategory_name, SUM(sd.order_quantity * pl.product_price) AS revenue
+FROM sales_data sd
+JOIN product_lookup pl ON sd.product_key = pl.product_key
+JOIN product_subcategory_lookup psl ON pl.product_subcategory_key = psl.product_subcategory_key
+WHERE EXTRACT(YEAR FROM sd.order_date) = 2020
+GROUP BY psl.subcategory_name
+ORDER BY revenue DESC
+LIMIT 1","""Road Bikes"": 4872483.81","SELECT psl.subcategory_name, SUM(sd.order_quantity * pl.product_price) AS revenue
+FROM sales_data sd
+JOIN product_lookup pl ON sd.product_key = pl.product_key
+JOIN product_subcategory_lookup psl ON pl.product_subcategory_key = psl.product_subcategory_key
+WHERE EXTRACT(YEAR FROM sd.order_date) = 2020
+GROUP BY psl.subcategory_name
+ORDER BY revenue DESC
+LIMIT 1;",Road Bikes: 4872483.81,TRUE
+Do married customers spend more on average than single customers?,"SELECT 
+  cl.marital_status, 
+  AVG(sl.order_quantity * pl.product_price) AS average_spent
+FROM 
+  sales_data sl
+  JOIN customer_lookup cl ON sl.customer_key = cl.customer_key
+  JOIN product_lookup pl ON sl.product_key = pl.product_key
+GROUP BY 
+  cl.marital_status
+ORDER BY 
+  average_spent DESC;","""S"": 476.8271445013295234
+""M"": 418.1644014392686959","SELECT 
+  cl.marital_status, 
+  AVG(sl.order_quantity * pl.product_price) AS average_spent
+FROM 
+  sales_data sl
+  JOIN customer_lookup cl ON sl.customer_key = cl.customer_key
+  JOIN product_lookup pl ON sl.product_key = pl.product_key
+GROUP BY 
+  cl.marital_status
+ORDER BY 
+  average_spent DESC;","""S"": 476.8271445013295234
+""M"": 418.1644014392686959",TRUE
+What were the top 5 best-selling products last year?,"SELECT p.product_name, SUM(sd.order_quantity) AS total_sales
+FROM sales_data sd
+JOIN product_lookup p ON sd.product_key = p.product_key
+WHERE EXTRACT(YEAR FROM sd.order_date) = 2022
+GROUP BY p.product_name
+ORDER BY total_sales DESC
+LIMIT 5;","""Water Bottle - 30 oz."":4565
+""Patch Kit/8 Patches"":3255
+""Mountain Tire Tube"":3121
+""AWC Logo Cap"":2394
+""Road Tire Tube"":2379","SELECT p.product_name, SUM(sd.order_quantity) AS total_sales
+FROM sales_data sd
+JOIN product_lookup p ON sd.product_key = p.product_key
+WHERE EXTRACT(YEAR FROM sd.order_date) = 2022
+GROUP BY p.product_name
+ORDER BY total_sales DESC
+LIMIT 5;","""Water Bottle - 30 oz."":4565
+""Patch Kit/8 Patches"":3255
+""Mountain Tire Tube"":3121
+""AWC Logo Cap"":2394
+""Road Tire Tube"":2379",TRUE
+What is the most common payment method used by customers?,"SELECT 
+    payment_method, 
+    COUNT(*) AS total_uses
+FROM 
+    sales_data -- Replace with your actual table name (e.g., transactions, payments)
+WHERE 
+    payment_method IS NOT NULL
+GROUP BY 
+    payment_method
+ORDER BY 
+    total_uses DESC
+LIMIT 1;","ERROR:  column ""payment_method"" does not exist
+LINE 2:     payment_method",,"Something went wrong: (psycopg2.errors.UndefinedColumn) column ""payment_method"" does not exist LINE 2: payment_method, ^
+
+[SQL: SELECT payment_method, COUNT(*) as count FROM sales_data GROUP BY payment_method ORDER BY count DESC LIMIT 1;] (Background on this error at: https://sqlalche.me/e/20/f405)",TRUE
+What is the best product?,"SELECT p.product_name 
+FROM sales_data sd 
+JOIN product_lookup p ON sd.product_key = p.product_key 
+GROUP BY p.product_name 
+ORDER BY SUM(sd.order_quantity * p.product_price) DESC 
+LIMIT 1;","Mountain-200 Black, 46","SELECT p.product_name 
+FROM sales_data sd 
+JOIN product_lookup p ON sd.product_key = p.product_key 
+GROUP BY p.product_name 
+ORDER BY SUM(sd.order_quantity * p.product_price) DESC 
+LIMIT 1;","Mountain-200 Black, 46",TRUE
