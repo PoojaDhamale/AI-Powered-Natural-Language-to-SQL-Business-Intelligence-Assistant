@@ -1,6 +1,9 @@
+import matplotlib
+matplotlib.use('Agg')
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+
 
 
 def _find_date_column(df: pd.DataFrame):
