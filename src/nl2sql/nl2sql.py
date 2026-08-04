@@ -20,6 +20,16 @@ if not groq_api_key:
         "GROQ_API_KEY not found. Please set it in Streamlit Secrets or your .env file."
     )
 
+DATABASE_URL = st.secrets.get("connections", {}).get("postgresql", {}).get("url")
+
+if not DATABASE_URL:
+    DATABASE_URL = os.getenv("DATABASE_URL")
+
+if not DATABASE_URL:
+    raise RuntimeError(
+        "DATABASE_URL is not set. Please provide it in your Streamlit Secrets block or .env file."
+    )
+
 engine = create_engine(DATABASE_URL)
 client = Groq(api_key=GROQ_API_KEY, timeout=30.0, max_retries=2)
 
