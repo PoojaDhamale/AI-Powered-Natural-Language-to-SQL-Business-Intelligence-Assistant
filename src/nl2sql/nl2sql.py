@@ -1,5 +1,6 @@
 import os
 import re
+from turtle import st
 import pandas as pd
 from groq import Groq
 from sqlalchemy import create_engine, text
@@ -12,10 +13,11 @@ load_dotenv()
 DATABASE_URL = os.getenv("DATABASE_URL")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
-if not GROQ_API_KEY:
+groq_api_key = st.secrets.get("GROQ_API_KEY") or os.getenv("GROQ_API_KEY")
+
+if not groq_api_key:
     raise RuntimeError(
-        "GROQ_API_KEY not found in .env. Get a free key at https://console.groq.com/keys "
-        "and add: GROQ_API_KEY=your_key_here"
+        "GROQ_API_KEY not found. Please set it in Streamlit Secrets or your .env file."
     )
 
 engine = create_engine(DATABASE_URL)
