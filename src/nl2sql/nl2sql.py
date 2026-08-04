@@ -1,6 +1,6 @@
 import os
 import re
-from turtle import st
+from streamlit import st
 import pandas as pd
 from groq import Groq
 from sqlalchemy import create_engine, text
