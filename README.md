@@ -2,7 +2,7 @@
 
 An end-to-end AI-powered business intelligence system that lets you query a PostgreSQL database using plain English. The assistant converts natural language questions into validated SQL, executes them live against the database, auto-visualizes the results, and — for "why" questions — runs a structured multi-step investigation that produces a written, data-grounded explanation.
 
-**🔗 Live Demo:** [[add your Streamlit Community Cloud link here](https://eo2y63umwncbb93egwmjvu.streamlit.app/)]
+**🔗 Live Demo:** [(https://eo2y63umwncbb93egwmjvu.streamlit.app/)]
 
 ---
 
