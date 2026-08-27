@@ -36,7 +36,7 @@ engine = create_engine(DATABASE_URL, pool_recycle=600, pool_pre_ping=True)
 
 client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 
-MODEL_NAME = "llama-3.3-70b-versatile"
+MODEL_NAME = "openai/gpt-oss-120b"
 
 SYSTEM_PROMPT = f"""You are a PostgreSQL expert helping a business analyst assistant
 convert natural language questions into SQL queries.
