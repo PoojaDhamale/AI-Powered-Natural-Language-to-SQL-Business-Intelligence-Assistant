@@ -28,20 +28,18 @@ An end-to-end AI-powered business intelligence system that lets you query a Post
 The system converts natural language into SQL using an LLM, validates generated queries before execution, retrieves results from PostgreSQL, automatically visualizes the output, and performs multi-step investigations for analytical "why" questions before generating AI-powered business insights.
 
 🌟 Key Features
-Natural Language → SQL — ask business questions in plain English, no SQL required.
-"Why" Investigation Engine — causal questions trigger an automated 5-query investigation (time trend, category, territory, sales volume) plus a normalized rate comparison, synthesized into a plain-English explanation by the LLM.
-Safety Validated — a code-level guardrail (independent of the prompt) blocks any non-SELECT statement before it can reach the database.
-Auto-Visualization — results are automatically rendered as line or bar charts based on the shape of the returned data, with a preference for normalized rate metrics over raw counts when both are available.
-Executive Dashboard (Power BI) — a complementary, always-on reporting layer with DAX measures for revenue, returns, and territory analysis.
-Tested — 18 automated unit tests covering the SQL safety guard, rate-normalization logic, and chart-selection logic, run automatically on every push via GitHub Actions.
-🧠 What Makes This Interesting
-
+Natural Language → SQL — ask business questions in plain English, no SQL required.</br>
+"Why" Investigation Engine — causal questions trigger an automated 5-query investigation (time trend, category, territory, sales volume) plus a normalized rate comparison, synthesized into a plain-English explanation by the LLM.</br>
+Safety Validated — a code-level guardrail (independent of the prompt) blocks any non-SELECT statement before it can reach the database.</br>
+Auto-Visualization — results are automatically rendered as line or bar charts based on the shape of the returned data, with a preference for normalized rate metrics over raw counts when both are available.</br>
+Executive Dashboard (Power BI) — a complementary, always-on reporting layer with DAX measures for revenue, returns, and territory analysis.</br>
+Tested — 18 automated unit tests covering the SQL safety guard, rate-normalization logic, and chart-selection logic, run automatically on every push via GitHub Actions.</br>
+🧠 What Makes This Interesting</br>
 Most NL-to-SQL demos stop at "ask a question, get a table." This project goes further: a "why" question isn't answered with a single query, because a single query can only retrieve data, not explain causation. Instead, the investigation engine runs a fixed sequence of breakdown queries and — critically — computes a normalized rate rather than relying on raw counts.
-
+</br>
 This caught a real analytical pitfall during development: an early version, using raw return counts only, suggested Australia had an anomalously high return rate (208 returns — the highest of any territory). After adding volume normalization, the system correctly revised its own conclusion: Australia's actual return rate (2.19%) was unremarkable — France (2.67%) and Southeast (2.86%) were both higher. The high raw count was simply a function of Australia having more sales volume, not an underlying problem. The system's own AI-generated explanation catches and states this distinction.
 
 🛠️ Tech Stack
-Layer	Technology
 Programming Language	Python 3.10
 Database	PostgreSQL 17
 ORM / Database Access	SQLAlchemy
