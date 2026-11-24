@@ -10,32 +10,44 @@ from schema_context import SCHEMA_CONTEXT
 
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL")
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
-groq_api_key = st.secrets.get("GROQ_API_KEY") or os.getenv("GROQ_API_KEY")
+def get_setting(name, default=None):
+    """Read from env vars first (CI, .env), then Streamlit secrets (Streamlit Cloud)."""
+    value = os.getenv(name)
+    if value:
+        return value
+    try:
+        return st.secrets.get(name, default)
+    except Exception:  # no secrets.toml available, e.g. on GitHub Actions
+        return default
 
+
+def get_database_url():
+    url = os.getenv("DATABASE_URL")
+    if url:
+        return url
+    try:
+        return st.secrets["connections"]["postgresql"]["url"]
+    except Exception:
+        return None
+
+
+groq_api_key = get_setting("GROQ_API_KEY")
 if not groq_api_key:
     raise RuntimeError(
         "GROQ_API_KEY not found. Please set it in Streamlit Secrets or your .env file."
     )
 
-DATABASE_URL = st.secrets.get("connections", {}).get("postgresql", {}).get("url")
-
-if not DATABASE_URL:
-    DATABASE_URL = os.getenv("DATABASE_URL")
-
+DATABASE_URL = get_database_url()
 if not DATABASE_URL:
     raise RuntimeError(
         "DATABASE_URL is not set. Please provide it in your Streamlit Secrets block or .env file."
     )
 
-
 # Force SQLAlchemy to close and refresh any connection older than 10 minutes
 engine = create_engine(DATABASE_URL, pool_recycle=600, pool_pre_ping=True)
 
-client = Groq(api_key=st.secrets["GROQ_API_KEY"])
-
+client = Groq(api_key=groq_api_key)
 MODEL_NAME = "openai/gpt-oss-120b"
 
 SYSTEM_PROMPT = f"""You are a PostgreSQL expert helping a business analyst assistant
