@@ -1,8 +1,9 @@
 pandas
 sqlalchemy
-psycopg[binary]
+psycopg2-binary
 python-dotenv
 groq
 plotly
-streamlit 
+streamlit
 matplotlib
+pytest
