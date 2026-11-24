@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GROQ_API_KEY: "dummy-key-for-tests"
-      DATABASE_URL: "postgresql://user:pass@localhost:5432/testdb"
+      DATABASE_URL: "postgresql+psycopg://user:pass@localhost:5432/testdb"
     steps:
       - uses: actions/checkout@v4
 
