@@ -4,6 +4,8 @@ An end-to-end AI-powered Business Intelligence system that lets users query a Po
 
 The assistant converts natural language questions into validated SQL, executes them against PostgreSQL, automatically visualizes the results, and — for **"why" questions** — runs a structured multi-step investigation to produce a written, data-grounded explanation.
 
+[![Run Tests](https://github.com/PoojaDhamale/AI-Powered-Natural-Language-to-SQL-Business-Intelligence-Assistant/actions/workflows/tests.yml/badge.svg)](https://github.com/PoojaDhamale/AI-Powered-Natural-Language-to-SQL-Business-Intelligence-Assistant/actions/workflows/tests.yml)
+
 🔗 **[Live Demo](https://eo2y63umwncbb93egwmjvu.streamlit.app/)**
 
 ---
@@ -48,15 +50,15 @@ Ask business questions in plain English without writing SQL manually. The LLM ge
 
 ### 🔎 "Why" Investigation Engine
 
-Causal or diagnostic questions trigger an automated **5-query investigation** covering:
+Questions containing "why", "reason", "cause" or "explain" trigger an automated **5-query investigation**:
 
-* Time trends
-* Product/category breakdown
-* Territory analysis
-* Sales volume
-* Normalized rate comparison
+* Main result (the question itself)
+* Monthly time trend
+* Product-category breakdown
+* Territory breakdown
+* Sales volume by territory
 
-The results are synthesized into a plain-English, data-grounded explanation.
+A **normalized rate** (returns as a % of units sold) is then calculated in pandas, and the results are synthesized into a plain-English, data-grounded explanation. If one query fails, the investigation continues with the others.
 
 ### 🛡️ SQL Safety Guardrail
 
@@ -120,17 +122,19 @@ To address this, the system uses a structured investigation engine that performs
 
 During development, an early version of the system used raw return counts.
 
-Australia had **208 returns**, the highest among the territories, which initially suggested that Australia had an unusually high return problem.
+In 2022, Australia had **208 returns**, the highest among the territories, which initially suggested that Australia had an unusually high return problem.
 
-However, after introducing volume normalization, the system calculated the actual return rate:
+However, after introducing volume normalization (returns ÷ units sold), the system calculated the actual 2022 return rates:
 
-* 🇦🇺 Australia: **2.19%**
-* 🇫🇷 France: **2.67%**
-* 🇺🇸 Southeast: **2.86%**
+| Territory | Returns | Units sold | Return rate |
+| --------- | ------- | ---------- | ----------- |
+| 🇦🇺 Australia | 208 | 9,487 | **2.19%** |
+| 🇫🇷 France | 113 | 4,236 | **2.67%** |
+| Company-wide (all territories) | 972 | 45,314 | **2.14%** |
 
 The analysis therefore revised the conclusion.
 
-Australia's high raw return count was primarily explained by its higher sales volume rather than an unusually high return rate.
+Australia's high raw return count was primarily explained by its higher sales volume. Its return rate is close to the company-wide average, while France had the highest rate among the larger territories.
 
 This demonstrates an important BI principle:
 
@@ -144,11 +148,11 @@ The investigation engine identifies this distinction and incorporates it into th
 
 | Category              | Technology               |
 | --------------------- | ------------------------ |
-| Programming Language  | Python 3.10              |
+| Programming Language  | Python 3.10+             |
 | Database              | PostgreSQL 17            |
 | Database Access       | SQLAlchemy               |
 | Data Processing       | pandas                   |
-| LLM                   | Groq API — LLaMA 3.3 70B |
+| LLM                   | Groq API — GPT-OSS-120B  |
 | Visualization         | Plotly                   |
 | Frontend              | Streamlit                |
 | Business Intelligence | Power BI                 |
@@ -185,7 +189,7 @@ The database follows a relational/star-schema structure containing **8 connected
 
 Make sure you have:
 
-* Python 3.9+
+* Python 3.10+
 * PostgreSQL installed and running
 * A free Groq API key
 
@@ -194,8 +198,8 @@ Make sure you have:
 ### 2. Clone the Repository
 
 ```bash
-git clone https://github.com/PoojaDhamale/AI-Business-Analyst.git
-cd AI-Business-Analyst
+git clone https://github.com/PoojaDhamale/AI-Powered-Natural-Language-to-SQL-Business-Intelligence-Assistant.git
+cd AI-Powered-Natural-Language-to-SQL-Business-Intelligence-Assistant
 ```
 
 ---
@@ -320,6 +324,8 @@ The NL-to-SQL pipeline was evaluated using **14 test questions** covering:
 * Ambiguous questions
 * Edge cases
 
+Each AI-generated query was run and its **results were compared against hand-written SQL** (see `evaluation/Evaluation.csv`). Note: `src/nl2sql/evaluate.py` only checks that a query runs without error; correctness was verified through the CSV comparison.
+
 ### Result
 
 **Accuracy: 92.9% (13/14)**
@@ -383,7 +389,7 @@ All evaluation ground-truth queries were independently written and verified in p
 | LLM occasionally generated multiple SQL statements     | Added an explicit single-statement rule and defensive SQL truncation |
 | `EXTRACT(MONTH FROM date)` merged multiple years       | Added `DATE_TRUNC` rules for proper multi-year time-series analysis  |
 | Integer month values were misinterpreted as timestamps | Added defensive date-detection logic in the visualization layer      |
-| Free-tier LLM provider access was unreliable           | Migrated from Google Gemini to Groq using LLaMA 3.3 70B              |
+| Free-tier LLM provider access was unreliable           | Migrated from Google Gemini to the Groq API (open-weight models)     |
 | Raw return counts produced misleading conclusions      | Added normalized return-rate analysis based on sales volume          |
 
 ---
@@ -391,7 +397,7 @@ All evaluation ground-truth queries were independently written and verified in p
 ## 📂 Project Structure
 
 ```text
-AI-Business-Analyst/
+AI-Powered-Natural-Language-to-SQL-Business-Intelligence-Assistant/
 │
 ├── .github/
 │   └── workflows/
@@ -496,6 +502,26 @@ User asks "Why did returns increase?"
                 ↓
      Data-Grounded Explanation
 ```
+
+---
+
+## 📈 Power BI Dashboard Highlights
+
+* **Executive overview:** 24.91M total revenue, 25K orders, 17K customers, average order value of 990.1, and an overall return rate of **2.17%**.
+* **Revenue is highly concentrated in Bikes:** about 23.6M of the 24.9M total (roughly 95%); Accessories and Clothing contribute under 1M each.
+* **Return rates across countries are very similar** (2.05%–2.37% across all products; France highest at 2.37%, Germany lowest at 2.05%), so no single country has a real return problem.
+* **Accessories have the most returns by count** (1,130) despite contributing little revenue.
+* **Returns increased sharply over time:** 86 (2020) → 770 (2021) → 972 (2022).
+
+---
+
+## ⚠️ Limitations
+
+* **The SQL guardrail is a keyword-based blocklist.** It is a first line of defense; a read-only database role should be used in production.
+* **The guardrail checks safety, not correctness.** A valid but wrong query would still run, which is why the evaluation compares results against hand-written SQL.
+* **The evaluation set is small (14 questions).**
+* **"Why" routing uses a simple keyword check,** so it can misfire on questions that are not real diagnostic questions.
+* **Return rate by region** requires the generated queries to return a column named `region`; otherwise the rate step is skipped.
 
 ---
 
